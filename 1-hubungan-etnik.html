@@ -1,0 +1,723 @@
+<!-- Peperiksaan Hubungan Etnik -->
+<div id="app"></div>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  :root{
+    --ink:#1c2b3a;
+    --paper:#f6f3ea;
+    --panel:#ffffff;
+    --line:#d8cfb8;
+    --maroon:#7a2331;
+    --maroon-dark:#5c1a25;
+    --gold:#b8863b;
+    --good:#3e6b4f;
+    --muted:#6b7280;
+    --serif:'Iowan Old Style','Georgia','Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'SF Mono','Menlo',monospace;
+  }
+  #app{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:var(--paper);
+    min-height:100%;
+    padding:0;
+    -webkit-font-smoothing:antialiased;
+  }
+  *{box-sizing:border-box;}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 20px 80px;}
+  .masthead{
+    text-align:center;
+    padding-bottom:22px;
+    margin-bottom:28px;
+    border-bottom:3px double var(--maroon);
+  }
+  .kicker{
+    font-family:var(--mono);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--maroon);
+    margin-bottom:8px;
+  }
+  .title{
+    font-family:var(--serif);
+    font-size:30px;
+    font-weight:700;
+    margin:0 0 6px;
+    color:var(--maroon-dark);
+  }
+  .subtitle{
+    font-size:13px;
+    color:var(--muted);
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:28px 26px;
+    box-shadow:0 1px 0 var(--line);
+  }
+  .field-label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+    margin-bottom:8px;
+    display:block;
+  }
+  input[type=text]{
+    width:100%;
+    font-family:var(--sans);
+    font-size:16px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:#fffdf8;
+    color:var(--ink);
+  }
+  input[type=text]:focus{outline:2px solid var(--gold);outline-offset:1px;}
+  .btn{
+    font-family:var(--sans);
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:.02em;
+    padding:13px 26px;
+    border-radius:2px;
+    border:1px solid var(--maroon);
+    background:var(--maroon);
+    color:#fff;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .btn:hover{background:var(--maroon-dark);}
+  .btn:active{transform:translateY(1px);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn:disabled:hover{background:var(--maroon);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--maroon);
+  }
+  .btn-ghost:hover{background:#f1e9dd;}
+  .progress-track{
+    height:4px;
+    background:var(--line);
+    border-radius:2px;
+    margin-bottom:26px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--gold);
+    transition:width .25s ease;
+  }
+  .qnum{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--gold);
+    letter-spacing:.06em;
+    margin-bottom:10px;
+  }
+  .qtext{
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.5;
+    margin:0 0 22px;
+    color:var(--ink);
+  }
+  .opt{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:13px 15px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    margin-bottom:10px;
+    cursor:pointer;
+    background:#fffdf8;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .opt:hover{border-color:var(--gold);}
+  .opt.selected{
+    border-color:var(--maroon);
+    background:#fbf1ee;
+  }
+  .opt-key{
+    font-family:var(--mono);
+    font-weight:700;
+    color:var(--maroon);
+    width:18px;
+    flex-shrink:0;
+  }
+  .opt-text{font-size:15px;line-height:1.4;}
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:24px;
+  }
+  .review-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(34px,1fr));
+    gap:6px;
+    margin:20px 0 26px;
+  }
+  .review-dot{
+    aspect-ratio:1;
+    border-radius:2px;
+    border:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    background:#fffdf8;
+    cursor:pointer;
+  }
+  .review-dot.answered{border-color:var(--good);color:var(--good);background:#f1f7f3;}
+  .review-dot.current{outline:2px solid var(--gold);outline-offset:1px;}
+  .center-msg{text-align:center;padding:30px 10px;}
+  .big-check{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--good);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;margin:0 auto 18px;
+  }
+  .done-title{font-family:var(--serif);font-size:24px;color:var(--maroon-dark);margin:0 0 10px;}
+  .done-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:26px;}
+  .field-error{color:var(--maroon);font-size:13px;margin-top:8px;}
+  .name-display{
+    font-size:12px;color:var(--muted);text-align:right;margin-bottom:16px;
+  }
+  /* teacher view */
+  .th-row{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:22px;flex-wrap:wrap;gap:10px;
+  }
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th{
+    text-align:left;font-family:var(--mono);font-size:11px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--maroon);
+  }
+  td{padding:10px 10px;border-bottom:1px solid var(--line);}
+  tr:hover td{background:#fbf7ee;}
+  .score-pill{
+    display:inline-block;padding:3px 10px;border-radius:12px;font-family:var(--mono);
+    font-size:12px;font-weight:700;
+  }
+  .score-high{background:#e4f1e8;color:var(--good);}
+  .score-mid{background:#fbf1de;color:var(--gold);}
+  .score-low{background:#fbeceb;color:var(--maroon);}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+  .loader{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px;}
+  .stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:26px;}
+  .stat-card{border:1px solid var(--line);background:#fffdf8;padding:16px;border-radius:2px;text-align:center;}
+  .stat-num{font-family:var(--serif);font-size:26px;color:var(--maroon-dark);}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .link-hint{
+    font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;margin-top:30px;
+    line-height:1.7;
+  }
+  @media (max-width:480px){
+    .title{font-size:24px;}
+    .qtext{font-size:17px;}
+    .panel{padding:20px 16px;}
+  }
+</style>
+<script type="text/babel">
+const {useState, useEffect, useRef} = React;
+
+const QUESTIONS = [
+["Apakah yang dimaksudkan dengan kepelbagaian etnik?",
+["Mempunyai bahasa kebangsaan sendiri, lagu kebangsaan dan politik yang baik.",
+"Mengamalkan kepercayaan sendiri, agama, adat, cara hidup tradisional dan mengekalkan hubungan yang baik.",
+"Berinteraksi dan bergaul antara satu sama lain.",
+"Mengikut peraturan kerajaan dan amalan kepercayaan sendiri."],1],
+["Buruh Cina (Singkeh) masuk ke Tanah Melayu dengan tiga cara. Antara berikut, yang manakah BUKAN cara kemasukan Orang Cina ke Tanah Melayu?",
+["Sistem Kangani","Sistem Kangchu","Sistem Tiket","Persendirian"],0],
+["Malaysia adalah sebuah negara yang terdiri daripada pelbagai etnik dan semua orang hidup dalam harmoni. Manakah yang SALAH mengenai etnik?",
+["Mengamalkan agama, kepercayaan dan tradisi masing-masing.",
+"Perlu toleransi dan bekerjasama untuk mengekalkan keharmonian sejagat",
+"Sentiasa bersaing dan bergaduh dengan satu sama lain untuk menyokong negara dari segi ekonomi dan sosial.",
+"Perlu aktif dalam sektor ekonomi yang berbeza untuk mendapatkan kejayaan"],2],
+["Apakah yang kerajaan lakukan setelah tragedi 13 Mei?",
+["Pengenalan sekolah kebangsaan","Mewajibkan semua kanak-kanak mendapatkan pendidikan asas","Menubuhkan Majlis Amanah Rakyat (MARA)","Membentuk Rukun Negara"],3],
+["Apakah nama Perlembagaan selepas Malayan Union 1946?",
+["Malayan Union 1948","Persekutuan Tanah Melayu 1948","Perlembagaan Persekutuan Tanah Melayu 1957","Perlembagaan Persekutuan Malaysia 1963"],1],
+["Apakah yang dimaksudkan dengan feudalisme?",
+["negeri atau wilayah yang diberi kuasa autonomi","negeri yang membayar wang perlindungan","kerajaan pusat seperti Putrajaya","terdapat pembesar-pembesar istana yang memerintah wilayah-wilayah atau negeri-negeri tertentu"],3],
+["Apakah konsep keagamaan dalam Kristian?",
+["Kesh","Trinity","Nirwana","Moksha"],1],
+["Berikut merupakan kepentingan memahami konsep asas hubungan etnik dalam masyarakat majmuk, KECUALI",
+["mengamalkan sikap tidak endah","melahirkan sikap yang lebih terbuka","menjadi semakin positif dalam hidup","memahami budaya sesuatu etnik"],0],
+["Masyarakat majmuk yang harmoni seperti di Malaysia merupakan hasil daripada sikap __________________ dan _________________ antara kaum sejak zaman __________.",
+["Kerjasama/ hormat menghormati/British","Tolak ansur/ kerjasama/British","Kerjasama/ hormat menghormati/ Jepun","Tolak ansur/ kerjasama/ Jepun"],1],
+["Dasar Aparteid yang diamalkan di Afrika Selatan antara tahun 1948 hingga 1994 telah menyebabkan pemisahan orang kulit hitam dengan majoriti dominan orang kulit putih. Dasar di atas menunjukkan tahap hubungan etnik terendah, iaitu",
+["asimilasi","segregasi","akomodasi","amalgamasi"],1],
+["Apakah tugas Bendahara?",
+["Sebagai Menteri Pertahanan","Sebagai Menteri Kewangan","Sebagai pemangku Diraja ketika Raja pergi ke luar daerah","Sebagai Hakim negara"],2],
+["Apakah yang dimaksudkan dengan kuasa mutlak Sultan?",
+["Sultan boleh melantik sesiapa sahaja","Sultan boleh membeli apa sahaja","Sultan boleh pergi ke mana sahaja","Sultan boleh masuk campur dalam semua hal"],3],
+["Siapakah Presiden pertama UMNO?",
+["Tun Dr Ismail","Tunku Abdul Rahman","Dato' Onn Jaafar","Haji Ibrahim Yaakob"],2],
+["Apakah tujuan utama UMNO ditubuhkan?",
+["Menentang Jus Soli","Menyatupadukan Kaum Melayu","Mencapai kemerdekaan dengan lebih cepat","Menentang Malayan Union"],3],
+["Apakah nama baru bagi Parti Perikatan?",
+["Parti Pesaka Bumiputera Bersatu","Parti Liberal Demokratik","Parti Gerakan Malaysia","Barisan Nasional"],3],
+["Penyataan berikut merupakan sebab atau faktor kenapa masyarakat dari negara-negara lain berhijrah ke Tanah Melayu pada zaman penjajahan, KECUALI",
+["peluang pekerjaan yang baik di negara asal","kemiskinan dan kelaparan negara asal","peluang kerja adalah lebih tinggi di Tanah Melayu","ekonomi yang baik di Tanah Melayu"],0],
+["Kemasukan imigran-imigran Cina dan India adalah agenda ekonomi British bagi mengusahakan _______________ dan _______________.",
+["Lombong-lombong biji timah/ ladang-ladang getah","Lombong-lombong arang batu/ladang-ladang kelapa sawit","Lombong-lombong biji timah/ ladang-ladang tebu","Lombong-lombong arang batu/ ladang-ladang kopi"],0],
+["Manakah antara yang berikut merupakan titik pemisah antara zaman pluraliti dan masyarakat pluralistik di Tanah Melayu?",
+["Penjajahan barat keatas Tanah Melayu","Pemerintahan kesultanan Melayu Melaka","Era Hinduisme dan Buddhisme di Alam Melayu","Akomodasi pedagang luar dan orang tempatan"],0],
+["Apakah fungsi undang-undang?",
+["Melindungi dan mengiring harta majikan","Mencegah kesalahan jenayah","Mengesan dan menangkap pesalah","Mencegah kezaliman, jenayah dan menjamin hak-hak manusia"],3],
+["Manakah antara faktor yang berikut menunjukkan masyarakat pada abad ke-15 Masihi dianggap mempunyai tahap pluraliti yang tinggi?",
+["Pemupukan negara bangsa tanpa paksaan","Proses penghijrahan turut disertai oleh keluarga","Asimilasi budaya antara pedagang Cina, India dan tempatan","Para pedagang tidak memerlukan pasport sebagai pengenalan diri"],1],
+["Antara berikut yang manakah BUKAN strategi yang berkait rapat dengan Pelan Tindakan Perpaduan dan Integrasi Nasional?",
+["Strategi Keselamatan","Strategi Integrasi Wilayah","Strategi Kebudayaan","Strategi Pemantauan Sosial Media"],3],
+["Antara berikut, manakah yang berkaitan dengan Strategi Pembangunan Kawasan?",
+["Memberikan kemudahan yang moden kepada semua sekolah luar bandar","Memastikan semua rakyat dapat hidup selesa","Memastikan semua kaum tidak tinggal di kawasan yang tiada kemudahan asas","Memastikan semua kawasan penting mempunyai jalur lebar"],2],
+["Pilih faktor pembentukan pola masyarakat pluralistik selepas kedatangan orang Eropah ke Tanah Melayu",
+["Kewujudan proses modenisasi","Pemisahan antara agama dan negara","Penghijrahan masuk orang Cina dan India","Kemasukan pedagang Eropah"],2],
+["Antara berikut, manakah yang berkaitan dengan Strategi Media Massa?",
+["Menggunakan media massa sebagai saluran ke arah meningkatkan pembangunan sosial dan ekonomi","Mewajibkan semua rakyat menonton siaran dari program-program terbitan kerajaan","Menggalakkan rancangan-rancangan yang menyeronokkan bagi semua kaum","Memastikan radio dan televisyen memberi banyak mesej tentang perpaduan"],3],
+["Antara berikut, manakah yang berkaitan dengan Strategi Penyelidikan dan Penerbitan Bahan Bacaan?",
+["Menggalakkan penerbitan buku-buku bagi bacaan kanak-kanak","Menggalakkan penerbitan naskah-naskah bacaan klasik untuk semua lapisan masyarakat","Menggalakkan penyelidikan ke arah mengkaji cara untuk meningkatkan perpaduan dan mengkaji cara menjauhi konflik antara kaum","Menggalakkan penyelidikan tentang konflik-konflik luar negara"],2],
+["Mengapakah pihak kuasa asing sangat berminat untuk menjajah Tanah Melayu?",
+["Keadaan politik yang kucar-kacir.","Rakyat Tanah Melayu yang sangat peramah dan baik serta mempunyai sikap yang mulia.","Tanah Melayu kaya dengan sumber hasil bumi yang pelbagai seperti minyak dan getah","Pemimpin dan rakyat yang menggalakkan mereka untuk menjajah."],2],
+["Antara berikut, yang manakah BENAR mengenai Akomodasi?",
+["Gopal dan Amir duduk makan bersama di kantin sekolah","Kaum Cina dan India yang sudah biasa dengan laungan azan setiap hari","Halimah berborak dengan peniaga Cina di market ikan","Subramanian yang berborak dengan jirannya yang berbangsa Cina"],1],
+["Mengapakah British menggubal Enakmen Pendaftaran Sekolah?",
+["Bagi memaksa kanak-kanak India pergi ke sekolah","Bagi mengawal pendidikan sekolah-sekolah Cina","Bagi mewajibkan semua orang-orang tua Melayu belajar membaca","Bagi menyeragamkan sistem bagi semua sekolah di Tanah Melayu"],1],
+["Antara berikut, yang manakah berkaitan dengan Laporan Barnes 1951?",
+["merangka satu corak pendidikan dirangka bagi memenuhi bentuk pendidikan di negara asal masing-masing","Bahasa Inggeris dijadikan bahasa penghantar di semua sekolah vernacular Melayu dan Tamil","untuk menyemak dan memperbaiki bentuk pendidikan Melayu","memberi lebih banyak bantuan kewangan kepada sekolah vernacular Melayu dan India"],2],
+["Antara berikut, yang manakah berkaitan dengan Laporan Fenn-Wu 1951?",
+["menyemak semula sistem pendidikan komuniti Cina","membela nasib pelajar-pelajar sekolah Cina","mahukan semua sekolah vernacular Melayu dan India mengikut sistem sekolah Cina","memberi bantuan pendidikan kepada sekolah vernacular Melayu"],0],
+].map((q,i)=>({id:i, text:q[0], options:q[1], correct:q[2]}));
+
+const TOTAL = QUESTIONS.length;
+const OPT_KEYS = ["A","B","C","D"];
+const SHEETDB_API = "PASTE_YOUR_SHEETDB_URL_HERE";
+
+function scoreBand(pct){
+  if(pct>=70) return "score-high";
+  if(pct>=40) return "score-mid";
+  return "score-low";
+}
+
+function StudentExam(){
+  const [stage, setStage] = useState("intro"); // intro | quiz | review | submitting | done | error
+  const [name, setName] = useState("");
+  const [nameErr, setNameErr] = useState("");
+  const [answers, setAnswers] = useState({});
+  const [idx, setIdx] = useState(0);
+
+  function startExam(){
+    if(!name.trim()){ setNameErr("Sila masukkan nama anda."); return; }
+    setNameErr("");
+    setStage("quiz");
+  }
+
+  function selectOption(qId, optIdx){
+    setAnswers(a=>({...a,[qId]:optIdx}));
+  }
+
+  async function submitExam(){
+    setStage("submitting");
+    let correctCount = 0;
+    QUESTIONS.forEach(q=>{
+      if(answers[q.id] === q.correct) correctCount++;
+    });
+    const attempt = {
+      name: name.trim(),
+      score: correctCount,
+      total: TOTAL,
+      pct: Math.round((correctCount/TOTAL)*100),
+      answers: answers,
+      submittedAt: new Date().toISOString(),
+    };
+    try{
+      const res = await fetch(SHEETDB_API, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({data: [{
+          Name: attempt.name,
+          Score: attempt.score,
+          Total: attempt.total,
+          Percent: attempt.pct,
+          Answers: JSON.stringify(attempt.answers),
+          SubmittedAt: attempt.submittedAt
+        }]})
+      });
+      if(!res.ok) throw new Error("Request failed: " + res.status);
+      setStage("done");
+    }catch(e){
+      console.error(e);
+      setStage("error");
+    }
+  }
+
+  const answeredCount = Object.keys(answers).length;
+
+  if(stage === "intro"){
+    return (
+      <div className="wrap">
+        <Masthead/>
+        <div className="panel">
+          <span className="field-label">Nama Pelajar</span>
+          <input type="text" value={name} onChange={e=>setName(e.target.value)}
+            placeholder="Taipkan nama penuh anda" onKeyDown={e=>{if(e.key==="Enter") startExam();}}/>
+          {nameErr && <div className="field-error">{nameErr}</div>}
+          <div style={{marginTop:22, fontSize:13, color:"var(--muted)", lineHeight:1.7}}>
+            {TOTAL} soalan aneka pilihan &middot; tiada had masa &middot; anda boleh cuba lagi selepas ini
+          </div>
+          <div style={{marginTop:22}}>
+            <button className="btn" onClick={startExam}>Mula Peperiksaan</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if(stage === "quiz"){
+    const q = QUESTIONS[idx];
+    const selected = answers[q.id];
+    return (
+      <div className="wrap">
+        <Masthead compact/>
+        <div className="name-display">{name}</div>
+        <div className="progress-track">
+          <div className="progress-fill" style={{width:`${((idx+1)/TOTAL)*100}%`}}/>
+        </div>
+        <div className="panel">
+          <div className="qnum">SOALAN {idx+1} / {TOTAL}</div>
+          <p className="qtext">{q.text}</p>
+          {q.options.map((opt,i)=>(
+            <div key={i} className={"opt" + (selected===i ? " selected":"")}
+              onClick={()=>selectOption(q.id,i)}>
+              <span className="opt-key">{OPT_KEYS[i]}</span>
+              <span className="opt-text">{opt}</span>
+            </div>
+          ))}
+          <div className="nav-row">
+            <button className="btn btn-ghost" disabled={idx===0} onClick={()=>setIdx(idx-1)}>&larr; Sebelum</button>
+            {idx < TOTAL-1
+              ? <button className="btn" onClick={()=>setIdx(idx+1)}>Seterusnya &rarr;</button>
+              : <button className="btn" onClick={()=>setStage("review")}>Semak Jawapan</button>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if(stage === "review"){
+    return (
+      <div className="wrap">
+        <Masthead compact/>
+        <div className="name-display">{name}</div>
+        <div className="panel">
+          <div className="qnum">SEMAKAN AKHIR</div>
+          <p className="qtext" style={{fontSize:16}}>Anda telah menjawab {answeredCount} daripada {TOTAL} soalan. Klik nombor untuk kembali ke soalan tersebut.</p>
+          <div className="review-grid">
+            {QUESTIONS.map((q,i)=>(
+              <div key={q.id}
+                className={"review-dot" + (answers[q.id]!==undefined ? " answered":"")}
+                onClick={()=>{setIdx(i); setStage("quiz");}}>
+                {i+1}
+              </div>
+            ))}
+          </div>
+          <div className="nav-row">
+            <button className="btn btn-ghost" onClick={()=>{setIdx(TOTAL-1); setStage("quiz");}}>&larr; Kembali</button>
+            <button className="btn" onClick={submitExam}>Hantar Peperiksaan</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if(stage === "submitting"){
+    return (
+      <div className="wrap">
+        <Masthead compact/>
+        <div className="panel"><div className="loader">Menghantar jawapan anda&hellip;</div></div>
+      </div>
+    );
+  }
+
+  if(stage === "error"){
+    return (
+      <div className="wrap">
+        <Masthead compact/>
+        <div className="panel">
+          <div className="center-msg">
+            <p className="done-sub">Maaf, berlaku ralat semasa menghantar jawapan anda. Sila cuba sekali lagi.</p>
+            <button className="btn" onClick={submitExam}>Cuba Lagi</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // done
+  return (
+    <div className="wrap">
+      <Masthead compact/>
+      <div className="panel">
+        <div className="center-msg">
+          <div className="big-check">&#10003;</div>
+          <h2 className="done-title">Jawapan Anda Telah Dihantar</h2>
+          <p className="done-sub">
+            Terima kasih, {name}. Peperiksaan anda telah direkodkan.<br/>
+            Keputusan tidak dipaparkan di sini &mdash; guru anda akan memaklumkan markah anda.
+          </p>
+          <button className="btn btn-ghost" onClick={()=>{
+            setAnswers({}); setIdx(0); setStage("intro");
+          }}>Cuba Sekali Lagi</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Masthead({compact}){
+  return (
+    <div className="masthead" style={compact ? {paddingBottom:14, marginBottom:20} : {}}>
+      <div className="kicker">Pentaksiran &middot; Sejarah &amp; Sosial</div>
+      <h1 className="title" style={compact ? {fontSize:22} : {}}>Hubungan Etnik di Malaysia</h1>
+      {!compact && <div className="subtitle">{TOTAL} soalan aneka pilihan</div>}
+    </div>
+  );
+}
+
+function AttemptDetail({attempt}){
+  return (
+    <tr>
+      <td colSpan="4" style={{background:"#faf6ec", padding:0}}>
+        <div style={{padding:"18px 16px", borderTop:"1px dashed var(--line)"}}>
+          {QUESTIONS.map((q,i)=>{
+            const chosen = attempt.answers ? attempt.answers[q.id] : undefined;
+            const isCorrect = chosen === q.correct;
+            const wasAnswered = chosen !== undefined;
+            return (
+              <div key={q.id} style={{marginBottom:16, paddingBottom:14, borderBottom: i<QUESTIONS.length-1 ? "1px solid var(--line)" : "none"}}>
+                <div style={{fontFamily:"var(--mono)", fontSize:11, color:"var(--gold)", marginBottom:6}}>
+                  SOALAN {i+1}
+                </div>
+                <div style={{fontSize:14, marginBottom:8, lineHeight:1.5}}>{q.text}</div>
+                <div style={{fontSize:13, display:"flex", flexDirection:"column", gap:4}}>
+                  <div>
+                    <span style={{color:"var(--muted)"}}>Jawapan pelajar: </span>
+                    <span style={{fontWeight:600, color: !wasAnswered ? "var(--muted)" : (isCorrect ? "var(--good)" : "var(--maroon)")}}>
+                      {wasAnswered ? `${OPT_KEYS[chosen]}. ${q.options[chosen]}` : "Tidak dijawab"}
+                    </span>
+                  </div>
+                  {!isCorrect && (
+                    <div>
+                      <span style={{color:"var(--muted)"}}>Jawapan betul: </span>
+                      <span style={{fontWeight:600, color:"var(--good)"}}>{OPT_KEYS[q.correct]}. {q.options[q.correct]}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function TeacherDashboard({onExit}){
+  const [attempts, setAttempts] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadErr, setLoadErr] = useState("");
+  const [expandedKey, setExpandedKey] = useState(null);
+
+  async function load(){
+    setLoading(true);
+    setLoadErr("");
+    try{
+      const res = await fetch(SHEETDB_API);
+      if(!res.ok) throw new Error("Request failed: " + res.status);
+      const rows = await res.json();
+      const results = rows.map((r, idx)=>({
+        key: String(idx) + "_" + (r.SubmittedAt || ""),
+        name: r.Name,
+        score: Number(r.Score),
+        total: Number(r.Total),
+        pct: Number(r.Percent),
+        answers: (function(){ try{ return JSON.parse(r.Answers); }catch(e){ return {}; } })(),
+        submittedAt: r.SubmittedAt,
+      }));
+      results.sort((a,b)=> new Date(b.submittedAt) - new Date(a.submittedAt));
+      setAttempts(results);
+    }catch(e){
+      console.error(e);
+      setLoadErr((e && e.message) ? e.message : "Ralat tidak diketahui semasa memuatkan data.");
+      setAttempts([]);
+    }
+    setLoading(false);
+  }
+
+  useEffect(()=>{ load(); },[]);
+
+  const avg = attempts && attempts.length
+    ? Math.round(attempts.reduce((s,a)=>s+a.pct,0)/attempts.length) : 0;
+  const uniqueStudents = attempts ? new Set(attempts.map(a=>a.name.toLowerCase().trim())).size : 0;
+
+  return (
+    <div className="wrap">
+      <div className="masthead">
+        <div className="kicker">Panel Guru &middot; Sulit</div>
+        <h1 className="title">Keputusan Peperiksaan</h1>
+        <div className="subtitle">Hubungan Etnik di Malaysia &mdash; {TOTAL} soalan</div>
+      </div>
+
+      <div className="th-row">
+        <div style={{fontSize:13,color:"var(--muted)"}}>
+          {attempts ? `${attempts.length} percubaan direkodkan \u00B7 klik satu baris untuk lihat jawapan penuh` : ""}
+        </div>
+        <button className="btn btn-ghost" onClick={load}>Muat Semula</button>
+      </div>
+
+      {loading && <div className="panel"><div className="loader">Memuatkan keputusan&hellip;</div></div>}
+
+      {!loading && loadErr && (
+        <div className="panel">
+          <div className="empty-state" style={{color:"var(--maroon)"}}>
+            Gagal memuatkan keputusan: {loadErr}
+          </div>
+        </div>
+      )}
+
+      {!loading && !loadErr && attempts && attempts.length === 0 && (
+        <div className="panel">
+          <div className="empty-state">
+            Belum ada percubaan direkodkan lagi.<br/>
+            Kongsikan pautan peperiksaan kepada pelajar anda untuk bermula.
+          </div>
+        </div>
+      )}
+
+      {!loading && !loadErr && attempts && attempts.length > 0 && (
+        <React.Fragment>
+          <div className="stat-cards">
+            <div className="stat-card">
+              <div className="stat-num">{attempts.length}</div>
+              <div className="stat-label">Percubaan</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-num">{uniqueStudents}</div>
+              <div className="stat-label">Pelajar Unik</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-num">{avg}%</div>
+              <div className="stat-label">Purata Markah</div>
+            </div>
+          </div>
+          <div className="panel" style={{padding:"18px 16px", overflowX:"auto"}}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Markah</th>
+                  <th>Peratus</th>
+                  <th>Tarikh &amp; Masa</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attempts.map(a=>(
+                  <React.Fragment key={a.key}>
+                    <tr onClick={()=>setExpandedKey(expandedKey===a.key ? null : a.key)} style={{cursor:"pointer"}}>
+                      <td>{a.name}</td>
+                      <td>{a.score} / {a.total}</td>
+                      <td><span className={"score-pill " + scoreBand(a.pct)}>{a.pct}%</span></td>
+                      <td style={{color:"var(--muted)",fontSize:13}}>
+                        {new Date(a.submittedAt).toLocaleString('ms-MY')}
+                        <span style={{marginLeft:10, color:"var(--gold)"}}>
+                          {expandedKey===a.key ? "▲" : "▼"}
+                        </span>
+                      </td>
+                    </tr>
+                    {expandedKey===a.key && <AttemptDetail attempt={a}/>}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </React.Fragment>
+      )}
+      <div className="th-row" style={{marginTop:20}}>
+        <button className="btn btn-ghost" onClick={onExit}>&larr; Kembali ke peperiksaan</button>
+      </div>
+      <div className="link-hint">
+        Paparan ini dilindungi PIN. Pelajar yang menggunakan pautan biasa<br/>
+        tidak akan melihat halaman ini melainkan mereka klik "Guru" dan tahu PIN.
+      </div>
+    </div>
+  );
+}
+
+const TEACHER_PIN = "2580";
+
+function TeacherGate({onBack}){
+  const [pin, setPin] = useState("");
+  const [err, setErr] = useState("");
+  const [unlocked, setUnlocked] = useState(false);
+
+  function tryUnlock(){
+    if(pin === TEACHER_PIN){ setErr(""); setUnlocked(true); }
+    else setErr("PIN salah. Sila cuba lagi.");
+  }
+
+  if(unlocked) return <TeacherDashboard onExit={onBack}/>;
+
+  return (
+    <div className="wrap">
+      <div className="masthead">
+        <div className="kicker">Panel Guru</div>
+        <h1 className="title" style={{fontSize:22}}>Log Masuk</h1>
+      </div>
+      <div className="panel">
+        <span className="field-label">Masukkan PIN Guru</span>
+        <input type="text" value={pin} inputMode="numeric"
+          onChange={e=>setPin(e.target.value)}
+          onKeyDown={e=>{if(e.key==="Enter") tryUnlock();}}
+          placeholder="****" />
+        {err && <div className="field-error">{err}</div>}
+        <div style={{marginTop:22, display:"flex", gap:10}}>
+          <button className="btn" onClick={tryUnlock}>Masuk</button>
+          <button className="btn btn-ghost" onClick={onBack}>Kembali</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const [view, setView] = useState("student"); // student | gate
+
+  if(view === "gate"){
+    return <TeacherGate onBack={()=>setView("student")}/>;
+  }
+
+  return (
+    <div>
+      <StudentExam/>
+      <div style={{textAlign:"center", paddingBottom:30}}>
+        <span onClick={()=>setView("gate")}
+          style={{fontSize:11, color:"var(--muted)", cursor:"pointer", textDecoration:"underline"}}>
+          Guru
+        </span>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<App/>);
+</script>
